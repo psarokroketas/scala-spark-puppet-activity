@@ -1,0 +1,39 @@
+ /usr/lib/spark2.3.0/bin/spark-submit --driver-class-path spark-puppet-activity-assembly-1.0.jar --class ch.cern.config.PuppetActivity --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.0 spark-puppet-activity-assembly-1.0.jar
+
+
+
+/usr/lib/spark/bin/spark-submit --driver-class-path /it-cm-lcs/scala-spark-puppet-activity/spark-puppet-activity-assembly-1.0.jar --class ch.cern.config.PuppetActivity --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.0 /it-cm-lcs/scala-spark-puppet-activity/spark-puppet-activity-assembly-1.0.jar
+
+
+
+
+
+This is a spark batch job that goes in Kafka and produces info as KPI about how many nodes are using puppet 
+Kafka at this point can only hold data about the last 3 days
+
+
+
+-> produces json file with all the needed fields 
+
+
+
+
+puppetDataRDD
+-> reads from kafka at a given endpoint (which is on config.scala) 
+-> gets data from collectd_raw_service plugin
+
+
+
+
+puppetHosts
+-> get the json from the above RDD and filters by 'puppetdb_population_num_nodes' instace
+-> which can be found in the given path
+-> groups by host and get the value of the 'population'
+
+
+
+puppetHosts.foreach
+-> sends the KPI to the given endpoint of the monitroing's team infrustractor
+
+
+
