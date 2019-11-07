@@ -1,0 +1,33 @@
+stages:
+  - app
+  - images
+
+build-app:
+  stage: app
+  image: gitlab-registry.cern.ch/monitoring/spark-sbt:2017-08-09
+  script: sbt --warn "set test in assembly := {}" clean assembly
+  artifacts:
+    paths:
+    - target/
+
+build-image-prod:
+  stage: images
+  only:
+    - master
+  tags:
+    - docker-image-build
+  script: "true"
+  variables:
+    DOCKER_FILE: ci/Dockerfile
+    TO: ${CI_REGISTRY_IMAGE}:stable
+
+build-image-qa:
+  stage: images
+  only:
+    - qa
+  tags:
+    - docker-image-build
+  script: "true"
+  variables:
+    DOCKER_FILE: ci/Dockerfile
+    TO: ${CI_REGISTRY_IMAGE}:qa
